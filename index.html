@@ -890,8 +890,8 @@
                     return;
                 }
 
-                // حساب تاريخ الانتهاء بالأشهر
-                const endDate = new Date();
+                // حساب تاريخ الانتهاء بالأشهر بناءً على تاريخ البدء المحدد
+                const endDate = new Date(startDate);
                 endDate.setMonth(endDate.getMonth() + parseInt(duration));
                 const endDateString = endDate.toISOString().split('T')[0]; // نأخذ فقط جزء التاريخ YYYY-MM-DD
 
