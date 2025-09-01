@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق إدارة صالة الألعاب الرياضية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c3e50">
+    <link rel="icon" href="1.png" sizes="192x192">
+    <link rel="apple-touch-icon" href="1.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --accent-color: #06b6d4;
+            --text-color: #1e293b;
+            --bg-color: #e0f2fe;
+            --card-bg: #ffffff;
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-color);
+            direction: rtl;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: var(--primary-color);
+            border-radius: 16px;
+            color: white;
+        }
+
+        .header img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid white;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+
+        .dashboard-card:nth-child(1) {
+            background: linear-gradient(135deg, #60a5fa20 0%, #3b82f620 100%);
+            border: 2px solid #3b82f6;
+        }
+
+        .dashboard-card:nth-child(2) {
+            background: linear-gradient(135deg, #4ade8020 0%, #22c55e20 100%);
+            border: 2px solid #22c55e;
+        }
+
+        .dashboard-card:nth-child(3) {
+            background: linear-gradient(135deg, #fb923c20 0%, #f9731620 100%);
+            border: 2px solid #f97316;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-card h3 {
+            color: var(--text-color);
+            font-size: 1.2em;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .dashboard-card .value {
+            font-size: 3.5em;
+            font-weight: 700;
+            color: var(--text-color);
+            line-height: 1;
+            margin: 10px 0;
+        }
+
+        .dashboard-card .icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .dashboard-card:nth-child(1) .icon {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .dashboard-card:nth-child(2) .icon {
+            background: #22c55e;
+            color: white;
+        }
+
+        .dashboard-card:nth-child(3) .icon {
+            background: #f97316;
+            color: white;
+        }
+
+        .dashboard-card .icon i {
+            font-size: 28px;
+        }
+
+        .filters {
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .filters select,
+        .filters input {
+            padding: 15px;
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            font-size: 1.1em;
+            background: white;
+            flex: 1;
+        }
+
+        .filters input {
+            padding-right: 50px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%232563eb' viewBox='0 0 24 24'%3E%3Cpath d='M21.71 20.29l-5.01-5.01C17.54 13.68 18 11.91 18 10c0-4.41-3.59-8-8-8S2 5.59 2 10s3.59 8 8 8c1.91 0 3.68-.46 5.28-1.3l5.01 5.01c.39.39 1.02.39 1.41 0l.01-.01c.39-.39.39-1.02 0-1.41zM10 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 15px center;
+            background-size: 24px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 2em;
+            margin: 40px 0 30px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            background: var(--bg-color);
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-size: 1.1em;
+            color: var(--text-color);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            font-size: 1.1em;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        .photo-input-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .photo-input-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: var(--primary-color);
+            color: white;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .photo-input-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .photo-input-btn i {
+            font-size: 1.2em;
+        }
+
+        #addMemberBtn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.3em;
+            font-weight: 700;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #addMemberBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+        }
+
+        .member-list {
+            display: grid;
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .member-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 2px solid var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .member-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .member-info {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .member-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-color);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+        }
+
+        .member-details h3 {
+            margin: 0 0 15px 0;
+            color: var(--primary-color);
+            font-size: 1.8em;
+        }
+
+        .member-details p {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .member-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .member-actions button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .renew-btn {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .delete-btn {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .member-actions button:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        /* Camera Preview Styles */
+        .camera-preview-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .camera-preview-content {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        #cameraPreview {
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .camera-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .camera-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #captureBtn {
+            background: var(--success-color);
+            color: white;
+        }
+
+        #cancelCameraBtn {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        /* Preview Image */
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin: 15px auto;
+            display: none;
+            border-radius: 8px;
+        }
+
+        /* Toast Styling */
+        .toastify {
+            font-family: 'Cairo', sans-serif;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .photo-input-container {
+                grid-template-columns: 1fr;
+            }
+
+            .member-info {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .member-photo {
+                margin: 0 auto 20px;
+            }
+
+            .member-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="1.png" alt="StrongFit Gym Logo">
+            <h1>كابتن احمد حمزة النادي الرياضي</h1>
+        </div>
+
+        <!-- داشبورد -->
+        <div class="dashboard">
+            <div class="dashboard-card">
+                <div class="icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="value" id="totalMembers">0</div>
+                <h3>إجمالي الأعضاء</h3>
+            </div>
+            <div class="dashboard-card">
+                <div class="icon">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="value" id="activeMembers">0</div>
+                <h3>الأعضاء النشطين</h3>
+            </div>
+            <div class="dashboard-card">
+                <div class="icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="value" id="expiringMembers">0</div>
+                <h3>قريبوا الانتهاء</h3>
+            </div>
+        </div>
+
+        <!-- فلترة وبحث -->
+        <div class="filters">
+            <select id="memberFilter">
+                <option value="all">جميع الأعضاء</option>
+                <option value="active">الأعضاء النشطين</option>
+                <option value="expired">الاشتراكات المنتهية</option>
+            </select>
+            <input type="text" id="searchInput" placeholder="ابحث عن عضو بالاسم أو رقم الهاتف...">
+        </div>
+
+        <h2>إضافة عضو جديد</h2>
+        <div class="add-member-form">
+            <div class="form-group">
+                <label for="memberName">اسم العضو:</label>
+                <input type="text" id="memberName" required>
+            </div>
+            <div class="form-group">
+                <label for="memberPhone">رقم الهاتف:</label>
+                <input type="tel" id="memberPhone" pattern="[0-9]*" inputmode="numeric" maxlength="11" placeholder="أدخل رقم الهاتف">
+            </div>
+            <div class="form-group">
+                <label for="memberPhoto">صورة العميل:</label>
+                <div class="photo-input-container">
+                    <button type="button" class="photo-input-btn" id="galleryBtn">
+                        <i class="fas fa-images"></i> اختر من المعرض
+                    </button>
+                    <button type="button" class="photo-input-btn" id="cameraBtn">
+                        <i class="fas fa-camera"></i> التقط صورة
+                    </button>
+                </div>
+                <input type="file" id="memberGallery" accept="image/*" style="display: none">
+                <img id="imagePreview" class="image-preview">
+                <div class="camera-preview-container">
+                    <div class="camera-preview-content">
+                        <video id="cameraPreview" autoplay playsinline></video>
+                        <div class="camera-buttons">
+                            <button type="button" class="camera-btn" id="captureBtn">
+                                <i class="fas fa-camera"></i> التقاط
+                            </button>
+                            <button type="button" class="camera-btn" id="cancelCameraBtn">
+                                <i class="fas fa-times"></i> إلغاء
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <canvas id="photoCanvas" style="display: none;"></canvas>
+            </div>
+            <!-- باقي حقول النموذج كما هي -->
+            <div class="form-group">
+                <label for="memberStartDate">تاريخ بدء الاشتراك:</label>
+                <input type="date" id="memberStartDate" required>
+            </div>
+            <div class="form-group">
+                <label for="memberDuration">مدة الاشتراك (بالأشهر):</label>
+                <input type="number" id="memberDuration" value="1" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="memberBasePayment">المبلغ الأساسي للاشتراك:</label>
+                <input type="number" id="memberBasePayment" value="0" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="memberPaidAmount">المبلغ المدفوع حالياً:</label>
+                <input type="number" id="memberPaidAmount" value="0" min="0" required>
+            </div>
+            <div class="form-group">
+                <button id="addMemberBtn">إضافة عضو</button>
+            </div>
+        </div>
+
+        <hr>
+        <h2>قائمة الأعضاء</h2>
+        <div class="member-list" id="memberList"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+    <!-- Toastify JS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <script>
+        // تكوين Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCe5FOdJQZHM5Ii3MJcqPlvVj957oupsqI",
+            authDomain: "gymapp-40351.firebaseapp.com",
+            projectId: "gymapp-40351",
+            storageBucket: "gymapp-40351.firebasestorage.app",
+            messagingSenderId: "577751207806",
+            appId: "1:577751207806:web:0c655b820b1427db796d2f",
+            measurementId: "G-9JL2J919D3"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const membersCollection = db.collection('members');
+        const auth = firebase.auth();
+
+        // دالة لعرض الإشعارات
+        function showToast(message, type = 'info') {
+            Toastify({
+                text: message,
+                duration: 3000,
+                gravity: "top",
+                position: 'center',
+                backgroundColor: type === 'success' ? '#4CAF50' : 
+                               type === 'error' ? '#F44336' : 
+                               type === 'warning' ? '#FFC107' : '#4A90E2',
+                className: "rtl-toast",
+            }).showToast();
+        }
+
+        // متغيرات الكاميرا
+        let stream = null;
+        const cameraPreviewContainer = document.querySelector('.camera-preview-container');
+        const cameraPreview = document.getElementById('cameraPreview');
+        const captureBtn = document.getElementById('captureBtn');
+        const cancelCameraBtn = document.getElementById('cancelCameraBtn');
+        const photoCanvas = document.getElementById('photoCanvas');
+        const imagePreview = document.getElementById('imagePreview');
+
+        // التحقق من إدخال رقم الهاتف
+        document.getElementById('memberPhone').addEventListener('input', function(e) {
+            // حذف أي حروف غير رقمية
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            // التأكد من أن الرقم يبدأ بـ 01
+            if (this.value.length >= 2 && this.value.substring(0, 2) !== '01') {
+                showToast('يجب أن يبدأ رقم الهاتف بـ 01', 'error');
+                this.value = '01';
+            }
+            
+            // التحقق من طول الرقم
+            if (this.value.length > 11) {
+                this.value = this.value.slice(0, 11);
+            }
+        });
+
+        // معالجة صور المعرض
+        document.getElementById('galleryBtn').addEventListener('click', () => {
+            document.getElementById('memberGallery').click();
+        });
+
+        // معالجة الكاميرا
+        document.getElementById('cameraBtn').addEventListener('click', async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                });
+                cameraPreview.srcObject = stream;
+                cameraPreviewContainer.style.display = 'flex';
+                showToast('تم تشغيل الكاميرا بنجاح', 'success');
+            } catch (err) {
+                console.error('خطأ في الوصول للكاميرا:', err);
+                showToast('فشل في الوصول للكاميرا. تأكد من السماح بالوصول.', 'error');
+            }
+        });
+
+        // التقاط الصورة
+        captureBtn.addEventListener('click', () => {
+            const context = photoCanvas.getContext('2d');
+            photoCanvas.width = cameraPreview.videoWidth;
+            photoCanvas.height = cameraPreview.videoHeight;
+            context.drawImage(cameraPreview, 0, 0);
+            
+            const imageData = photoCanvas.toDataURL('image/jpeg', 0.8);
+            window.capturedImage = imageData;
+            
+            // عرض معاينة الصورة
+            imagePreview.src = imageData;
+            imagePreview.style.display = 'block';
+            
+            // إغلاق الكاميرا
+            stopCamera();
+            showToast('تم التقاط الصورة بنجاح', 'success');
+        });
+
+        // إلغاء الكاميرا
+        cancelCameraBtn.addEventListener('click', stopCamera);
+
+        // إيقاف الكاميرا
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            cameraPreviewContainer.style.display = 'none';
+        }
+
+        // معالجة اختيار الصورة من المعرض
+        document.getElementById('memberGallery').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    window.capturedImage = event.target.result;
+                    // عرض معاينة الصورة
+                    imagePreview.src = event.target.result;
+                    imagePreview.style.display = 'block';
+                    showToast('تم اختيار الصورة بنجاح', 'success');
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        // دالة تنسيق التاريخ بالعربية
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
+            return date.toLocaleDateString('ar-EG', options);
+        }
+
+        // البحث والفلترة
+        const searchInput = document.getElementById('searchInput');
+        const memberFilter = document.getElementById('memberFilter');
+
+        searchInput.addEventListener('input', updateMembersList);
+        memberFilter.addEventListener('change', updateMembersList);
+
+        function updateMembersList() {
+            membersCollection.get().then(snapshot => {
+                const searchTerm = searchInput.value.toLowerCase();
+                const filterValue = memberFilter.value;
+                
+                let totalActive = 0;
+                let totalExpiring = 0;
+                let totalVisible = 0;
+
+                const memberListDiv = document.getElementById('memberList');
+                memberListDiv.innerHTML = '';
+
+                snapshot.forEach(doc => {
+                    const member = { id: doc.id, ...doc.data() };
+                    const name = member.name.toLowerCase();
+                    const phone = (member.phone || '').toLowerCase();
+                    
+                    // تحقق من حالة العضو
+                    const endDate = new Date(member.endDate);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    const isExpired = endDate < today;
+                    const diffTime = endDate.getTime() - today.getTime();
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    const isExpiring = !isExpired && diffDays <= 7;
+                    const isActive = !isExpired && !isExpiring;
+
+                    const matchesSearch = name.includes(searchTerm) || phone.includes(searchTerm);
+                    const matchesFilter = filterValue === 'all' ||
+                                        (filterValue === 'active' && isActive) ||
+                                        (filterValue === 'expired' && isExpired);
+
+                    if (matchesSearch && matchesFilter) {
+                        // إنشاء بطاقة العضو
+                        const memberCard = createMemberCard(member, isActive, isExpiring, isExpired);
+                        memberListDiv.appendChild(memberCard);
+                        
+                        totalVisible++;
+                        if (isActive) totalActive++;
+                        if (isExpiring) totalExpiring++;
+                    }
+                });
+
+                // تحديث الداشبورد
+                document.getElementById('totalMembers').textContent = totalVisible;
+                document.getElementById('activeMembers').textContent = totalActive;
+                document.getElementById('expiringMembers').textContent = totalExpiring;
+            }).catch(error => {
+                console.error('خطأ في جلب الأعضاء:', error);
+                showToast('حدث خطأ في جلب بيانات الأعضاء', 'error');
+            });
+        }
+
+        function createMemberCard(member, isActive, isExpiring, isExpired) {
+            let statusClass = isExpired ? 'status-expired' : 
+                            isExpiring ? 'status-warning' : 'status-active';
+            let statusText = isExpired ? 'منتهي' : 
+                           isExpiring ? `ينتهي قريباً` : 'نشط';
+
+            const memberCard = document.createElement('div');
+            memberCard.className = 'member-card';
+            memberCard.innerHTML = `
+                <div class="member-info">
+                    <img src="${member.photo || 'https://via.placeholder.com/150x150?text=No+Photo'}" class="member-photo" alt="صورة العضو">
+                    <div class="member-details">
+                        <h3>${member.name}</h3>
+                        <p><strong>الهاتف:</strong> ${member.phone || 'لا يوجد'}</p>
+                        <p><strong>تاريخ البدء:</strong> ${formatDate(member.startDate)}</p>
+                        <p><strong>تاريخ الانتهاء:</strong> <span class="${statusClass}">${formatDate(member.endDate)} (${statusText})</span></p>
+                        <p><strong>المبلغ الأساسي:</strong> ${member.basePayment} ج.م</p>
+                        <p><strong>المبلغ المدفوع:</strong> ${member.paidAmount} ج.م</p>
+                        <p><strong>المبلغ المتبقي:</strong> ${member.basePayment - member.paidAmount} ج.م</p>
+                    </div>
+                </div>
+                <div class="member-actions">
+                    <button class="renew-btn" onclick="renewMembership('${member.id}')">تجديد الاشتراك</button>
+                    <button class="delete-btn" onclick="deleteMember('${member.id}')">حذف العضو</button>
+                </div>
+            `;
+            
+            return memberCard;
+        }
+
+        // تحديث عرض الأعضاء
+        function renderMembers(members) {
+            const memberListDiv = document.getElementById('memberList');
+            memberListDiv.innerHTML = '';
+            
+            members.forEach(member => {
+                const endDate = new Date(member.endDate);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                let statusClass = '';
+                let statusText = '';
+                
+                if (endDate < today) {
+                    statusClass = 'status-expired';
+                    statusText = 'منتهي';
+                } else {
+                    const diffTime = endDate.getTime() - today.getTime();
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    if (diffDays <= 7) {
+                        statusClass = 'status-warning';
+                        statusText = `ينتهي قريباً (${diffDays} أيام)`;
+                    } else {
+                        statusClass = 'status-active';
+                        statusText = 'نشط';
+                    }
+                }
+                
+                const memberCard = document.createElement('div');
+                memberCard.className = 'member-card';
+                memberCard.innerHTML = `
+                    <div class="member-info">
+                        <img src="${member.photo || 'https://via.placeholder.com/150x150?text=No+Photo'}" class="member-photo" alt="صورة العضو">
+                        <div class="member-details">
+                            <h3>${member.name}</h3>
+                            <p><strong>الهاتف:</strong> ${member.phone || 'لا يوجد'}</p>
+                            <p><strong>تاريخ البدء:</strong> ${member.startDate}</p>
+                            <p><strong>تاريخ الانتهاء:</strong> <span class="${statusClass}">${member.endDate} (${statusText})</span></p>
+                            <p><strong>المبلغ الأساسي:</strong> ${member.basePayment} ج.م</p>
+                            <p><strong>المبلغ المدفوع:</strong> ${member.paidAmount} ج.م</p>
+                            <p><strong>المبلغ المتبقي:</strong> ${member.basePayment - member.paidAmount} ج.م</p>
+                        </div>
+                    </div>
+                    <div class="member-actions">
+                        <button class="renew-btn" onclick="renewMembership('${member.id}')">تجديد الاشتراك</button>
+                        <button class="delete-btn" onclick="deleteMember('${member.id}')">حذف العضو</button>
+                    </div>
+                `;
+                
+                memberListDiv.appendChild(memberCard);
+            });
+
+            updateMembersList(); // تحديث الإحصائيات والفلترة
+        }
+
+        // إضافة عضو جديد
+        document.getElementById('addMemberBtn').addEventListener('click', async () => {
+            try {
+                const name = document.getElementById('memberName').value.trim();
+                const phone = document.getElementById('memberPhone').value.trim();
+                const startDate = document.getElementById('memberStartDate').value;
+                const duration = parseInt(document.getElementById('memberDuration').value);
+                const basePayment = parseFloat(document.getElementById('memberBasePayment').value);
+                const paidAmount = parseFloat(document.getElementById('memberPaidAmount').value);
+                
+                console.log('Form values:', { name, phone, startDate, duration, basePayment, paidAmount });
+
+                if (!name || !startDate || !duration || isNaN(basePayment) || isNaN(paidAmount)) {
+                    showToast('يرجى ملء جميع الحقول المطلوبة', 'error');
+                    return;
+                }
+
+                // حساب تاريخ الانتهاء بالأشهر بناءً على تاريخ البدء المحدد
+                const endDate = new Date(startDate);
+                endDate.setMonth(endDate.getMonth() + parseInt(duration));
+                const endDateString = endDate.toISOString().split('T')[0]; // نأخذ فقط جزء التاريخ YYYY-MM-DD
+
+                // إضافة العضو إلى Firebase
+                await membersCollection.add({
+                    name,
+                    phone,
+                    startDate,
+                    endDate: endDateString,
+                    basePayment,
+                    paidAmount,
+                    photo: window.capturedImage || null,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // تنظيف الحقول
+                document.getElementById('memberName').value = '';
+                document.getElementById('memberPhone').value = '';
+                document.getElementById('memberBasePayment').value = '0';
+                document.getElementById('memberPaidAmount').value = '0';
+                document.getElementById('memberDuration').value = '1';
+                document.getElementById('imagePreview').style.display = 'none';
+                window.capturedImage = null;
+
+                showToast('تم إضافة العضو بنجاح!', 'success');
+            } catch (error) {
+                console.error('خطأ في إضافة العضو:', error);
+                showToast('حدث خطأ أثناء إضافة العضو', 'error');
+            }
+        });
+
+        // حذف عضو
+        async function deleteMember(memberId) {
+            if (confirm('هل أنت متأكد من حذف هذا العضو؟')) {
+                try {
+                    await membersCollection.doc(memberId).delete();
+                    showToast('تم حذف العضو بنجاح', 'success');
+                } catch (error) {
+                    console.error('خطأ في حذف العضو:', error);
+                    showToast('حدث خطأ أثناء حذف العضو', 'error');
+                }
+            }
+        }
+
+        // تجديد اشتراك
+        async function renewMembership(memberId) {
+            const doc = await membersCollection.doc(memberId).get();
+            if (doc.exists) {
+                const member = doc.data();
+                const duration = prompt('أدخل مدة التجديد بالأشهر:', '1');
+                if (duration && !isNaN(duration)) {
+                    const basePayment = prompt('أدخل المبلغ الأساسي الجديد:', member.basePayment);
+                    const paidAmount = prompt('أدخل المبلغ المدفوع:', '0');
+                    
+                    if (basePayment && paidAmount && !isNaN(basePayment) && !isNaN(paidAmount)) {
+                        const startDate = new Date();
+                        const endDate = new Date(startDate);
+                        endDate.setMonth(endDate.getMonth() + parseInt(duration));
+                        
+                        // أولاً، نزيل العضو من قائمة التنبيهات المغلقة إذا كان موجوداً
+                        let dismissedAlerts = JSON.parse(localStorage.getItem('dismissedAlerts') || '[]');
+                        dismissedAlerts = dismissedAlerts.filter(id => id !== memberId);
+                        localStorage.setItem('dismissedAlerts', JSON.stringify(dismissedAlerts));
+
+                        try {
+                            await membersCollection.doc(memberId).update({
+                                startDate: startDate.toISOString().split('T')[0],
+                                endDate: endDate.toISOString().split('T')[0],
+                                basePayment: parseFloat(basePayment),
+                                paidAmount: parseFloat(paidAmount),
+                                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                            showToast('تم تجديد الاشتراك بنجاح', 'success');
+                        } catch (error) {
+                            console.error('خطأ في تجديد الاشتراك:', error);
+                            showToast('حدث خطأ أثناء تجديد الاشتراك', 'error');
+                        }
+                    } else {
+                        showToast('يرجى إدخال مبالغ صحيحة', 'error');
+                    }
+                }
+            }
+        }
+
+        // باقي الكود كما هو...
+        // دالة الاستماع للتحديثات
+        function listenForMemberUpdates() {
+            membersCollection.orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+                updateMembersList(); // تحديث القائمة مباشرة عند حدوث أي تغيير
+                checkExpiringMemberships(); // فحص الاشتراكات
+            }, error => {
+                console.error("Error getting members:", error);
+                showToast('حدث خطأ في جلب بيانات الأعضاء', 'error');
+            });
+        }
+
+        // دالة فحص الاشتراكات والتنبيهات المعلقة
+        function checkExpiringMemberships() {
+            // التحقق من وجود تنبيهات معلقة والتنبيهات المغلقة نهائياً
+            const pendingAlerts = JSON.parse(localStorage.getItem('pendingAlerts') || '[]');
+            const dismissedAlerts = JSON.parse(localStorage.getItem('dismissedAlerts') || '[]');
+            
+            // عرض التنبيهات المعلقة
+            pendingAlerts.forEach(member => {
+                if (!dismissedAlerts.includes(member.id)) {
+                    showExpirationAlert(member.name, member.id);
+                }
+            });
+
+            membersCollection.get().then(snapshot => {
+                snapshot.forEach(doc => {
+                    const member = { id: doc.id, ...doc.data() };
+                    const endDate = new Date(member.endDate);
+                    const now = new Date();
+                    
+                    // إذا انتهى الاشتراك
+                    if (endDate <= now) {
+                        // التحقق مما إذا كان التنبيه موجود في القائمة المعلقة أو المغلقة نهائياً
+                        const isAlreadyPending = pendingAlerts.some(alert => alert.id === member.id);
+                        const isDismissed = dismissedAlerts.includes(member.id);
+                        
+                        if (!isAlreadyPending && !isDismissed) {
+                            // إضافة التنبيه إلى القائمة المعلقة
+                            pendingAlerts.push({
+                                id: member.id,
+                                name: member.name,
+                                endDate: member.endDate
+                            });
+                            localStorage.setItem('pendingAlerts', JSON.stringify(pendingAlerts));
+                            
+                            // عرض التنبيه
+                            showExpirationAlert(member.name, member.id);
+                        }
+                    }
+                });
+            });
+        }
+
+        // دالة عرض إنذار انتهاء الاشتراك
+        function showExpirationAlert(memberName, memberId) {
+            // التحقق من عدم وجود تنبيه مفتوح لنفس العضو
+            if (document.querySelector(`[data-member-id="${memberId}"]`)) {
+                return;
+            }
+            
+            // التحقق من أن التنبيه لم يتم إغلاقه نهائياً
+            const dismissedAlerts = JSON.parse(localStorage.getItem('dismissedAlerts') || '[]');
+            if (dismissedAlerts.includes(memberId)) {
+                return;
+            }
+
+            // إنشاء عنصر الإنذار
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'expiration-alert';
+            alertDiv.setAttribute('data-member-id', memberId);
+            alertDiv.innerHTML = `
+                <div class="expiration-alert-content">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #ef4444;"></i>
+                    <h2>تنبيه انتهاء اشتراك</h2>
+                    <p>انتهى اشتراك: <strong>${memberName}</strong></p>
+                    <button class="close-alert">إغلاق وعدم التذكير مرة أخرى</button>
+                    <button class="snooze-alert">تذكير لاحقاً</button>
+                </div>
+            `;
+
+            // إضافة معالجات الأحداث للأزرار
+            const closeButton = alertDiv.querySelector('.close-alert');
+            const snoozeButton = alertDiv.querySelector('.snooze-alert');
+
+            closeButton.addEventListener('click', () => {
+                // إضافة معرف العضو إلى قائمة التنبيهات المغلقة نهائياً
+                let dismissedAlerts = JSON.parse(localStorage.getItem('dismissedAlerts') || '[]');
+                if (!dismissedAlerts.includes(memberId)) {
+                    dismissedAlerts.push(memberId);
+                    localStorage.setItem('dismissedAlerts', JSON.stringify(dismissedAlerts));
+                }
+                
+                // إزالة التنبيه من القائمة المعلقة
+                let pendingAlerts = JSON.parse(localStorage.getItem('pendingAlerts') || '[]');
+                pendingAlerts = pendingAlerts.filter(alert => alert.id !== memberId);
+                localStorage.setItem('pendingAlerts', JSON.stringify(pendingAlerts));
+                
+                // إيقاف الصوت وإغلاق التنبيه
+                clearInterval(alertDiv.soundInterval);
+                if (alertDiv.alarmSound) {
+                    alertDiv.alarmSound.pause();
+                    alertDiv.alarmSound.currentTime = 0;
+                }
+                alertDiv.remove();
+            });
+
+            snoozeButton.addEventListener('click', () => {
+                // إيقاف الصوت وإغلاق التنبيه مؤقتاً
+                clearInterval(alertDiv.soundInterval);
+                if (alertDiv.alarmSound) {
+                    alertDiv.alarmSound.pause();
+                    alertDiv.alarmSound.currentTime = 0;
+                }
+                alertDiv.remove();
+            });
+            document.body.appendChild(alertDiv);
+
+            // إضافة الأنماط للإنذار
+            const style = document.createElement('style');
+            style.textContent = `
+                .expiration-alert {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.8);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 9999;
+                    animation: fadeIn 0.3s ease;
+                }
+                .expiration-alert-content {
+                    background: white;
+                    padding: 30px;
+                    border-radius: 20px;
+                    text-align: center;
+                    max-width: 400px;
+                    margin: 20px;
+                    animation: scaleIn 0.3s ease;
+                }
+                .expiration-alert h2 {
+                    color: #ef4444;
+                    margin: 15px 0;
+                }
+                .expiration-alert p {
+                    font-size: 1.2em;
+                    margin: 15px 0;
+                }
+                .expiration-alert button {
+                    background: #ef4444;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 8px;
+                    font-size: 1.1em;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                }
+                .expiration-alert button:hover {
+                    background: #dc2626;
+                }
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes scaleIn {
+                    from { transform: scale(0.8); opacity: 0; }
+                    to { transform: scale(1); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+
+            // تشغيل الصوت المتكرر
+            const alarmSound = new Audio('data:audio/wav;base64,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qJrx4KOQjahZxWbcZgztj2c49nKmkId44S71j0c8eV9yDK6uPRzx5X18eDvjvQ6yKo9ZSS6l//8elePK/Lf//IInrOF/FvDoADYAGBMGb7FtErm5MXMlmPAJQVgWta7Zx2go+8xJ0UiCb8LHHdftWyLJE0QIAIsI+UbXu67dZMjmgDGCGl1H+vpF4NSDckSIkk7Vd+sxEhBQMRU8j/12UIRhzSaUdQ+rQU5kGeFxm+hb1oh6pWWmv3uvmReDl0UnvtapVaIzo1jZbf/pD6ElLqSX+rUmOQNpJFa/r+sa4e/pBlAABoAAAAA3CUgShLdGIxsY7AUABPRrgCABdDuQ5GC7DqPQCgbbJUAoRSUj+NIEig0YfyWUho1VBBBA//uQZB4ABZx5zfMakeAAAAmwAAAAF5F3P0w9GtAAACfAAAAAwLhMDmAYWMgVEG1U0FIGCBgXBXAtfMH10000EEEEEECUBYln03TTTdNBDZopopYvrTTdNa325mImNg3TTPV9q3pmY0xoO6bv3r00y+IDGid/9aaaZTGMuj9mpu9Mpio1dXrr5HERTZSmqU36A3CumzN/9Robv/Xx4v9ijkSRSNLQhAWumap82WRSBUqXStV/YcS+XVLnSS+WLDroqArFkMEsAS+eWmrUzrO0oEmE40RlMZ5+ODIkAyKAGUwZ3mVKmcamcJnMW26MRPgUw6j+LkhyHGVGYjSUUKNpuJUQoOIAyDvEyG8S5yfK6dhZc0Tx1KI/gviKL6qvvFs1+bWtaz58uUNnryq6kt5RzOCkPWlVqVX2a/EEBUdU1KrXLf40GoiiFXK///qpoiDXrOgqDR38JB0bw7SoL+ZB9o1RCkQjQ2CBYZKd/+VJxZRRZlqSkKiws0WFxUyCwsKiMy7hUVFhIaCrNQsKkTIsLivwKKigsj8XYlwt/WKi2N4d//uQRCSAAjURNIHpMZBGYiaQPSYyAAABLAAAAAAAACWAAAAApUF/Mg+0aohSIRobBAsMlO//Kk4soosy1JSFRYWaLC4qZBYWFRGZdwqKiwkNBVmoWFSJkWFxX4FFRQWR+LsS4W/rFRb/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////VEFHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU291bmRib3kuZGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjAwNGh0dHA6Ly93d3cuc291bmRib3kuZGUAAAAAAAAAACU=');
+            alarmSound.volume = 1.0; // أعلى صوت
+            alertDiv.alarmSound = alarmSound;
+            
+            // تشغيل الصوت لمدة 20 ثانية
+            let playCount = 0;
+            const maxPlays = 20; // عدد مرات التشغيل (كل مرة تستغرق ثانية واحدة)
+            
+            alertDiv.soundInterval = setInterval(() => {
+                if (playCount < maxPlays) {
+                    alarmSound.play();
+                    playCount++;
+                } else {
+                    clearInterval(alertDiv.soundInterval);
+                }
+            }, 1000); // تشغيل كل ثانية
+        }
+
+        // تشغيل فحص الاشتراكات كل ثانية
+        setInterval(checkExpiringMemberships, 1000);
+
+        auth.signInAnonymously().then(() => {
+            listenForMemberUpdates();
+        }).catch(error => {
+            console.error("Error signing in anonymously:", error);
+            showToast('حدث خطأ في تسجيل الدخول', 'error');
+        });
+
+        // إضافة Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(() => console.log("Service Worker Registered"))
+                .catch(err => console.error("Service Worker Registration Failed:", err));
+        }
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
